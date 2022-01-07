@@ -35,6 +35,18 @@ class AlienInvasion:
         # Make the Play button.
         self.play_button = Button(self, "Play")
         
+        # Make difficulty levels buttons.
+        self.diff_buttons = [
+            Button(self, "Easy"),
+            Button(self, "Normal"),
+            Button(self, "Hard")
+        ]
+        self.diff_buttons[0].rect.x = (self.settings.screen_width//2)-400
+        self.diff_buttons[2].rect.x = (self.settings.screen_width//2)+200
+        for button in self.diff_buttons:
+            button.rect.y += 150
+            button._center_msg()
+            
     def run_game(self):
         """Start the main loop for the game."""
         while True:
@@ -56,18 +68,48 @@ class AlienInvasion:
                 sys.exit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
-                self._check_play_button(mouse_pos)
+                self._check_buttons(mouse_pos)
             elif event.type == pygame.KEYDOWN:
                 self._check_keydown_events(event)
             elif event.type == pygame.KEYUP:
                 self._check_keyup_events(event)
                 
-    def _check_play_button(self, mouse_pos):
+    def _check_buttons(self, mouse_pos):
         """Start a new game when the player clicks Play."""
-        button_clicked = self.play_button.rect.collidepoint(mouse_pos)
-        if button_clicked and not self.stats.game_active:
-            # Reset the game settings.
+        play_button_clicked = self.play_button.rect.collidepoint(mouse_pos)
+        easy_button_clicked = self.diff_buttons[0].rect.collidepoint(mouse_pos)
+        normal_button_clicked = self.diff_buttons[1].rect.collidepoint(mouse_pos)
+        hard_button_clicked = self.diff_buttons[2].rect.collidepoint(mouse_pos)
+        
+        if easy_button_clicked and not self.stats.game_active:
             self.settings.initialize_dynamic_settings()
+            self.settings.alien_speed = self.settings.alien_speed - 0.25
+            self.diff_buttons[0].clicked = True
+            self.diff_buttons[1].clicked = False
+            self.diff_buttons[2].clicked = False
+            self.stats.difficulty_chosen = True
+        elif normal_button_clicked and not self.stats.game_active:
+            self.settings.initialize_dynamic_settings()
+            self.diff_buttons[0].clicked = False
+            self.diff_buttons[1].clicked = True
+            self.diff_buttons[2].clicked = False
+            self.stats.difficulty_chosen = True
+        elif hard_button_clicked and not self.stats.game_active:
+            self.settings.initialize_dynamic_settings()
+            self.settings.alien_speed = self.settings.alien_speed + 0.25
+            self.diff_buttons[0].clicked = False
+            self.diff_buttons[1].clicked = False
+            self.diff_buttons[2].clicked = True
+            self.stats.difficulty_chosen = True
+        
+        
+        if play_button_clicked and not self.stats.difficulty_chosen and not self.stats.game_active:
+            self.settings.initialize_dynamic_settings()
+            self.diff_buttons[0].clicked = False
+            self.diff_buttons[1].clicked = True
+            self.diff_buttons[2].clicked = False
+            self.stats.difficulty_chosen = True
+        elif play_button_clicked and self.stats.difficulty_chosen and not self.stats.game_active:
             self._start_game()
     
     def _check_keydown_events(self, event):
@@ -231,6 +273,9 @@ class AlienInvasion:
         # Draw the play button if the game is inactive.
         if not self.stats.game_active:
             self.play_button.draw_button()
+            
+            for button in self.diff_buttons:
+                button.draw_button()
         
         # Make the most recently drawn screen visible.
         pygame.display.flip()
