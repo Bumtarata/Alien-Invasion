@@ -82,35 +82,42 @@ class AlienInvasion:
         hard_button_clicked = self.diff_buttons[2].rect.collidepoint(mouse_pos)
         
         if easy_button_clicked and not self.stats.game_active:
-            self.settings.initialize_dynamic_settings()
-            self.settings.alien_speed = self.settings.alien_speed - 0.25
-            self.diff_buttons[0].clicked = True
-            self.diff_buttons[1].clicked = False
-            self.diff_buttons[2].clicked = False
-            self.stats.difficulty_chosen = True
+            self._choose_easy_diff()
         elif normal_button_clicked and not self.stats.game_active:
-            self.settings.initialize_dynamic_settings()
-            self.diff_buttons[0].clicked = False
-            self.diff_buttons[1].clicked = True
-            self.diff_buttons[2].clicked = False
-            self.stats.difficulty_chosen = True
+            self._choose_normal_diff()
         elif hard_button_clicked and not self.stats.game_active:
-            self.settings.initialize_dynamic_settings()
-            self.settings.alien_speed = self.settings.alien_speed + 0.25
-            self.diff_buttons[0].clicked = False
-            self.diff_buttons[1].clicked = False
-            self.diff_buttons[2].clicked = True
-            self.stats.difficulty_chosen = True
-        
+            self._choose_hard_diff()
         
         if play_button_clicked and not self.stats.difficulty_chosen and not self.stats.game_active:
-            self.settings.initialize_dynamic_settings()
-            self.diff_buttons[0].clicked = False
-            self.diff_buttons[1].clicked = True
-            self.diff_buttons[2].clicked = False
-            self.stats.difficulty_chosen = True
+            self._choose_normal_diff()
         elif play_button_clicked and self.stats.difficulty_chosen and not self.stats.game_active:
             self._start_game()
+            
+    def _choose_easy_diff(self):
+        """Sets difficulty setting to easy."""
+        self.settings.initialize_dynamic_settings()
+        self.settings.alien_speed = self.settings.alien_speed - 0.25
+        self.diff_buttons[0].clicked = True
+        self.diff_buttons[1].clicked = False
+        self.diff_buttons[2].clicked = False
+        self.stats.difficulty_chosen = True
+        
+    def _choose_normal_diff(self):
+        """Sets difficulty setting to normal."""
+        self.settings.initialize_dynamic_settings()
+        self.diff_buttons[0].clicked = False
+        self.diff_buttons[1].clicked = True
+        self.diff_buttons[2].clicked = False
+        self.stats.difficulty_chosen = True
+        
+    def _choose_hard_diff(self):
+        """Sets difficulty setting to hard."""
+        self.settings.initialize_dynamic_settings()
+        self.settings.alien_speed = self.settings.alien_speed + 0.25
+        self.diff_buttons[0].clicked = False
+        self.diff_buttons[1].clicked = False
+        self.diff_buttons[2].clicked = True
+        self.stats.difficulty_chosen = True
     
     def _check_keydown_events(self, event):
         """Respond to keypresses."""
