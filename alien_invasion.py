@@ -24,8 +24,10 @@ class AlienInvasion:
         self.settings.screen_height = self.screen.get_rect().height
         pygame.display.set_caption("Alien Invasion")
         
-        # Create an instance to store game statistics and create a scoreboard.
+        # Create an instance to store game statistics, load high score and 
+        # create a scoreboard.
         self.stats = GameStats(self)
+        self._load_high_score()
         self.sb = Scoreboard(self)
         
         self.ship = Ship(self)
@@ -128,6 +130,7 @@ class AlienInvasion:
         elif event.key == pygame.K_LEFT:
             self.ship.moving_left = True
         elif event.key == pygame.K_q:
+            self._save_high_score()
             sys.exit()
         elif event.key == pygame.K_SPACE:
             self._fire_bullet()
@@ -191,6 +194,7 @@ class AlienInvasion:
             self.bullets, self.aliens, True, True)
             
         if collisions:
+            # Add score points for destroying alien ships.
             for aliens in collisions.values():
                 self.stats.score += self.settings.alien_points * len(aliens)
             self.sb.prep_score()
@@ -291,7 +295,23 @@ class AlienInvasion:
         for alien in self.aliens.sprites():
             alien.rect.y += self.settings.fleet_drop_speed
         self.settings.fleet_direction *= -1
-    
+        
+    def _save_high_score(self):
+        """Saves high score to a seperate text file."""
+        with open('all_time_high_score.txt', 'w') as file_object:
+            file_object.write(str(self.stats.high_score))
+            
+    def _load_high_score(self):
+        """Loads high score and sets it as self.stats.high_score."""
+        try:
+            with open('all_time_high_score.txt') as file_object:
+                content = file_object.read()
+            loaded_high_score = int(content)
+            self.stats.high_score = loaded_high_score
+        except FileNotFoundError:
+            with open('all_time_high_score.txt', 'x'):
+                pass
+        
     def _update_screen(self):
         """Update images on the screen and flip to the new screen."""
         self.screen.fill(self.settings.bg_color)
