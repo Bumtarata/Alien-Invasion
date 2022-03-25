@@ -150,9 +150,7 @@ class AlienInvasion:
         """Starts a new game."""
         # Reset the game statistics.
         self.stats.reset_stats()
-        self.sb.prep_score()
-        self.sb.prep_level()
-        self.sb.prep_ships()
+        self.sb.prep_images()
         self.stats.game_active = True
             
         # Get rid of any remaining aliens and bullets.
@@ -201,6 +199,9 @@ class AlienInvasion:
             self.sb.check_high_score()
             
         if not self.aliens:
+            self._prepare_new_enemies()
+        
+    def _prepare_new_enemies(self):
         # Destroy existing bullets and create new fleet.
             self.bullets.empty()
             self._create_fleet()
